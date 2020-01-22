@@ -1,13 +1,14 @@
 import webbrowser
-from csv import writer, reader
-from time import sleep
-from datetime import datetime, timedelta
 from calendar import day_name
+from csv import writer, reader
+from datetime import datetime, timedelta
 from random import randrange
-from easygui import buttonbox, msgbox
-from questions import *
-from cooking_lists import *
+from time import sleep
 
+from easygui import buttonbox, msgbox
+
+from cooking_lists import *
+from questions import *
 
 version = "Cooking Helper v.1"
 
