@@ -66,7 +66,7 @@ def main_coarse_suggestion_func():
     А ако гарнитурата се падне да бъде салата, я избира от списък със салати."""
     current_day = get_datetime()[3]
     if current_day in ("събота", "неделя"):
-        main_coarse_suggestion = angel_list[randrange(0, len(angel_list))]
+        main_coarse_suggestion = child_list[randrange(0, len(child_list))]
     else:
         main_coarse_suggestion = main_dish_list[randrange(0, len(main_dish_list))]
     if main_coarse_suggestion in garnish_needed:
@@ -132,37 +132,27 @@ def takeaway_open_func():
 
 
 def if_nothing_selected_func():
-    """Функция, която извиква, когато от всички позволени превъртания на циклите за предложение на храна,
-    не е избрано нито едно ястие.
-    Позволява 2 предложения за онлайн поръчка на храна и отваря страницата на Тейкауей."""
-    denied_list = []
-    order_food = ""
+    """Функция, която извиква, когато от всички позволени превъртания на
+    циклите за предложение на храна, не е избрано нито едно ястие.
+    Позволява 1 предложение за онлайн поръчка на храна и отваря страницата на Тейкауей."""
+    order_food = order_func()
     current_date = get_datetime()[0]
-    for _ in range(2):
-        while order_food != denied_list:
-            order_food = order_func()
-            if order_food in denied_list:
-                order_food = order_func()
-            else:
-                break
-
-        msg = f"\Очевидно днес не ти се готви." \
-              f"\nПредлагам ти тогава, {order_food}." \
-              f"\nСъгласна ли си?"
-        options = ["ДА", "НЕ"]
-        order_prompt = buttonbox(msg=msg, title=version, choices=options)
-        if order_prompt == "ДА":
-            file_write_func(current_date, order_food)
-            msgbox("Добре, отварям за теб www.takeaway.com...", title=version)
-            sleep(2)
-            takeaway_open_func()
-            end_page()
-            break
-        else:
-            denied_list.append(order_food)
-    else:
+    msg = f"Очевидно днес не ти се готви." \
+          f"\nПредлагам ти тогава, {order_food}." \
+          f"\nСъгласна ли си?"
+    options = ["ДА", "НЕ"]
+    order_prompt = buttonbox(msg=msg, title=version, choices=options)
+    if order_prompt == "ДА":
+        file_write_func(current_date, order_food)
+        msgbox("Добре, отварям за теб www.takeaway.com...", title=version)
+        sleep(2)
+        takeaway_open_func()
+        end_page()
+    elif order_food == "НЕ":
         msgbox("Хм... Мисля, че е по-добре да си починеш малко.", title=version)
         end_page()
+    else:
+        out_msg()
 
 
 def check_receipt_in_google(food_suggestion):
@@ -219,6 +209,8 @@ def home_page():
         choose_coarse()
     elif start == start_options[1]:
         msgbox("\nОК. Когато ти потрябвам, знаеш къде да ме намериш.\nЧао!")
+    else:
+        out_msg()
 
 
 def choose_coarse():
@@ -233,6 +225,8 @@ def choose_coarse():
         breakfast()
     elif choose_button == coarse_options_list[4]:
         end_page()
+    else:
+        out_msg()
 
 
 def main_coarse():
@@ -244,7 +238,7 @@ def main_coarse():
     foods_for_last_week = foods_for_last_week_func()
     foods_for_last_week_string = ', '.join(foods_for_last_week)
     main_coarse_suggestion = ""
-    for _ in range(5):
+    for _ in range(10):
         if "риба" not in foods_for_last_week_string \
                 and "риба" not in foods_for_today_string \
                 and "риба" not in denied_list_string \
@@ -260,7 +254,8 @@ def main_coarse():
         while main_coarse_suggestion != "риба":
             main_coarse_suggestion = main_coarse_suggestion_func()
             if main_coarse_suggestion in denied_list_string \
-                    or main_coarse_suggestion in foods_for_last_week_string:
+                    or main_coarse_suggestion in foods_for_last_week_string\
+                    or main_coarse_suggestion in foods_for_today_string:
                 main_coarse_suggestion = main_coarse_suggestion_func()
             else:
                 break
@@ -284,6 +279,8 @@ def main_coarse():
             elif next_step == "ИЗХОД":
                 end_page()
                 break
+            else:
+                break
         elif main_coarse_prompt == "НЕ":
             denied_list.append(main_coarse_suggestion)
         else:
@@ -297,7 +294,7 @@ def salad():
     foods_for_last_week = foods_for_last_week_func()
     foods_for_today = file_read_func()[1]
     denied_list = []
-    for _ in range(3):
+    for _ in range(5):
         while True:
             salad_suggestion = salad_suggestion_func()
             if salad_suggestion in denied_list \
@@ -328,7 +325,7 @@ def salad():
             else:
                 break
         elif choose_salad == "НЕ":
-                denied_list.append(salad_suggestion)
+            denied_list.append(salad_suggestion)
         else:
             break
     else:
@@ -341,7 +338,7 @@ def dessert():
     foods_for_last_week = foods_for_last_week_func()
     foods_for_today = file_read_func()[1]
     denied_list = []
-    for _ in range(3):
+    for _ in range(5):
         while True:
             dessert_suggestion = dessert_suggestion_func()
             if dessert_suggestion in denied_list \
@@ -387,7 +384,7 @@ def breakfast():
     foods_for_last_week = foods_for_last_week_func()
     foods_for_today = file_read_func()[1]
     denied_list = []
-    for _ in range(3):
+    for _ in range(5):
         while True:
             breakfast_suggestion = breakfast_suggestion_func()
             if breakfast_suggestion in denied_list \
@@ -439,7 +436,7 @@ def breakfast():
                 else:
                     break
         elif breakfast_prompt == "НЕ":
-                denied_list.append(breakfast_suggestion)
+            denied_list.append(breakfast_suggestion)
         else:
             break
     else:
@@ -465,4 +462,3 @@ def end_page():
 
 def out_msg():
     msgbox("\nЖелая ти прекрасен остатък от деня. Чао!", title=version)
-
