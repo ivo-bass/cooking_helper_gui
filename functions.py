@@ -10,7 +10,7 @@ from easygui import buttonbox, msgbox
 from cooking_lists import *
 from questions import *
 
-version = "Cooking Helper v.1"
+version = "Cooking Helper v.2"
 
 
 def get_datetime():

@@ -1,7 +1,5 @@
 from functions import *
 
-version = "Cooking Helper v.1"
-
 
 def main():
     home_page()
