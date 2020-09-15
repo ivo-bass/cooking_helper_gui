@@ -116,14 +116,20 @@ def file_read_func():
     file = open("history.csv", 'r', newline='', encoding='utf-8')
     read_csv = reader(file, delimiter=',')
     dates = []
-    foods_for_today = []
     current_date = get_datetime()[0]
+    tomorrow_date = get_datetime()[4]
+
+    foods_for_today = []
+    foods_for_tomorrow = []
     for row in read_csv:
         dates.append(row[0])
         if row[0] == current_date:
             foods_for_today.append(row[1])
+        elif row[0] == tomorrow_date:
+            foods_for_tomorrow.append(row[1])
+
     file.close()
-    return dates, foods_for_today
+    return dates, foods_for_today, foods_for_tomorrow
 
 
 def takeaway_open_func():
@@ -148,10 +154,10 @@ def if_nothing_selected_func():
         msgbox("Добре, отварям за теб www.takeaway.com...", title=version)
         sleep(2)
         takeaway_open_func()
-        end_page()
+        list_for_today()
     elif order_food == "НЕ":
         msgbox("Хм... Мисля, че е по-добре да си починеш малко.", title=version)
-        end_page()
+        list_for_today()
     else:
         out_msg()
 
@@ -204,12 +210,14 @@ def home_page():
                 f"\n{greetings()[1]}" \
                 f"\n\n{start_msg}" \
                 f"\n{start_prompt}"
-    start_options = ["ДА", "НЕ"]
+    start_options = ["ДА", "НЕ", "СПИСЪЦИ"]
     start = buttonbox(msg=hello_msg, title=version, choices=start_options)
     if start == start_options[0]:
         choose_coarse()
-    elif start == start_options[1]:
-        msgbox("\nОК. Когато ти потрябвам, знаеш къде да ме намериш.\nЧао!")
+    # elif start == start_options[1]:
+    #     msgbox("\nОК. Когато ти потрябвам, знаеш къде да ме намериш.\nЧао!")
+    elif start == start_options[2]:
+        lists()
     else:
         out_msg()
 
@@ -225,7 +233,9 @@ def choose_coarse():
     elif choose_button == coarse_options_list[3]:
         breakfast()
     elif choose_button == coarse_options_list[4]:
-        end_page()
+        list_for_today()
+    elif choose_button == coarse_options_list[5]:
+        lists()
     else:
         out_msg()
 
@@ -272,13 +282,13 @@ def main_coarse():
             next_step = buttonbox(msg=msg, title=version, choices=options)
             if next_step == "РЕЦЕПТА В GOOGLE":
                 check_receipt_in_google(main_coarse_suggestion)
-                end_page()
+                list_for_today()
                 break
             elif next_step == "ПРОДЪЛЖИ":
                 choose_coarse()
                 break
             elif next_step == "ИЗХОД":
-                end_page()
+                list_for_today()
                 break
             else:
                 break
@@ -315,13 +325,13 @@ def salad():
             next_step = buttonbox(msg=msg, title=version, choices=options)
             if next_step == "РЕЦЕПТА В GOOGLE":
                 check_receipt_in_google(salad_suggestion)
-                end_page()
+                list_for_today()
                 break
             elif next_step == "ПРОДЪЛЖИ":
                 choose_coarse()
                 break
             elif next_step == "ИЗХОД":
-                end_page()
+                list_for_today()
                 break
             else:
                 break
@@ -360,13 +370,13 @@ def dessert():
             next_step = buttonbox(msg=msg, title=version, choices=options)
             if next_step == "РЕЦЕПТА В GOOGLE":
                 check_receipt_in_google(dessert_suggestion)
-                end_page()
+                list_for_today()
                 break
             elif next_step == "ПРОДЪЛЖИ":
                 choose_coarse()
                 break
             elif next_step == "ИЗХОД":
-                end_page()
+                list_for_today()
                 break
             else:
                 break
@@ -409,13 +419,13 @@ def breakfast():
                 next_step = buttonbox(msg=msg, title=version, choices=options)
                 if next_step == "РЕЦЕПТА В GOOGLE":
                     check_receipt_in_google(breakfast_suggestion)
-                    end_page()
+                    list_for_today()
                     break
                 elif next_step == "ПРОДЪЛЖИ":
                     choose_coarse()
                     break
                 elif next_step == "ИЗХОД":
-                    end_page()
+                    list_for_today()
                     break
                 else:
                     break
@@ -426,13 +436,13 @@ def breakfast():
                 next_step = buttonbox(msg=msg, title=version, choices=options)
                 if next_step == "РЕЦЕПТА В GOOGLE":
                     check_receipt_in_google(breakfast_suggestion)
-                    end_page()
+                    list_for_today()
                     break
                 elif next_step == "ПРОДЪЛЖИ":
                     choose_coarse()
                     break
                 elif next_step == "ИЗХОД":
-                    end_page()
+                    list_for_today()
                     break
                 else:
                     break
@@ -445,7 +455,21 @@ def breakfast():
         home_page()
 
 
-def end_page():
+def lists():
+    msg = "Избери за кой ден искаш да видиш списък."
+    options = ["СПИСЪК ЗА ДНЕС", "СПИСЪК ЗА УТРЕ", "НАЧАЛО", "ИЗХОД"]
+    next_step = buttonbox(msg=msg, title=version, choices=options)
+    if next_step == "НАЧАЛО":
+        home_page()
+    elif next_step == "СПИСЪК ЗА ДНЕС":
+        list_for_today()
+    elif next_step == "СПИСЪК ЗА УТРЕ":
+        list_for_tomorrow()
+    else:
+        out_msg()
+
+
+def list_for_today():
     foods_for_today = file_read_func()[1]
     foods_for_today_string = ', '.join(foods_for_today)
     if not foods_for_today:
@@ -461,5 +485,21 @@ def end_page():
         out_msg()
 
 
+def list_for_tomorrow():
+    foods_for_tomorrow = file_read_func()[2]
+    foods_for_tomorrow_string = ', '.join(foods_for_tomorrow)
+    if not foods_for_tomorrow:
+        msg = "За утре няма избрани ястия."
+    else:
+        msg = f"\nСписъкът за утре е:" \
+          f"\n{foods_for_tomorrow_string.upper()}"
+    options = ["НАЧАЛО", "ИЗХОД"]
+    next_step = buttonbox(msg=msg, title=version, choices=options)
+    if next_step == "НАЧАЛО":
+        home_page()
+    elif next_step == "ИЗХОД":
+        out_msg()
+
+
 def out_msg():
-    msgbox("\nЖелая ти прекрасен остатък от деня. Чао!", title=version)
+    msgbox("\nЖелая ти прекрасен остатък от деня!\n\nЧао!", title=version)
