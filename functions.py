@@ -10,7 +10,7 @@ from easygui import buttonbox, msgbox
 from cooking_lists import *
 from questions import *
 
-version = "Cooking Helper v.2"
+TITLE = "Cooking Helper v.2"
 
 
 def get_datetime():
@@ -214,8 +214,6 @@ def home_page():
     start = buttonbox(msg=hello_msg, title=version, choices=start_options)
     if start == start_options[0]:
         choose_coarse()
-    # elif start == start_options[1]:
-    #     msgbox("\nОК. Когато ти потрябвам, знаеш къде да ме намериш.\nЧао!")
     elif start == start_options[2]:
         lists()
     else:
@@ -497,7 +495,7 @@ def list_for_tomorrow():
     next_step = buttonbox(msg=msg, title=version, choices=options)
     if next_step == "НАЧАЛО":
         home_page()
-    elif next_step == "ИЗХОД":
+    else:
         out_msg()
 
 
